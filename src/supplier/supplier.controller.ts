@@ -30,5 +30,10 @@ export class SupplierController {
   remove(@Param('id') id: string) {
     return this.supplierService.remove(+id);
   }
+
+  @Get(':id/with/article')
+  findOneWithArticles(@Param('id') id: string) {
+    return this.supplierService.findOneWithArticles(+id);
+  }
 }
 

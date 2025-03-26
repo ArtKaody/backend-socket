@@ -39,4 +39,14 @@ export class SupplierService {
     });
   }
   
+  async findOneWithArticles(id: number) {
+    return this.prisma.suppliers.findUnique({
+      where: { id, deletedAt: null },
+      include: {
+        articles: {
+          where: { deletedAt: null }
+        }
+      }
+    });
+  }
 }
