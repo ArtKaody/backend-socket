@@ -8,6 +8,7 @@ import { ArticlesModule } from './articles/articles.module';
 import { FileUploadsService } from './file-uploads/file-uploads.service';
 
 
+
 @Module({
   imports: [NotificationModule, PurchaseRequestModule, SupplierModule, ArticlesModule],
   controllers: [AppController],
