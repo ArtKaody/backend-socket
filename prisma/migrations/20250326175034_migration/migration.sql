@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Suppliers" ALTER COLUMN "longitude" SET DATA TYPE TEXT,
+ALTER COLUMN "latitude" SET DATA TYPE TEXT;
