@@ -10,87 +10,47 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Role {
-  ADMINISTRATEUR
-  GESTIONNAIRE_FINANCIER
-  GESTIONNAIRE_DE_STOCK
-  UTILISATEUR
-}
-
-model User {
-  id              Int               @id @default(autoincrement())
+model Users {
+  id              Int                @id @default(autoincrement())
   name            String
-  email           String            @unique
+  email           String             @unique
   password        String
-  role            Role
+  role            String
   departement     String?
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @updatedAt
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
   deletedAt       DateTime?
-  purchaseRequest PurchaseRequest[] @relation("UserPurchaseRequest")
-  Notification    Notification[]
-  Historique      Historique[]
+  purchaseRequest PurchaseRequests[] @relation("UserPurchaseRequest")
+  Notification    Notifications[]
+  Historique      Historiques[]
 }
 
-model PurchaseRequest {
-  id                     Int                      @id @default(autoincrement())
+model PurchaseRequests {
+  id                     Int                       @id @default(autoincrement())
   label                  String
   price                  Float
   status                 String
-  urgent                 Boolean                  @default(false)
+  urgent                 Boolean                   @default(false)
   validerId              Int?
   userId                 Int
-  user                   User                     @relation("UserPurchaseRequest", fields: [userId], references: [id])
-  createdAt              DateTime                 @default(now())
-  updatedAt              DateTime                 @updatedAt
+  user                   Users                     @relation("UserPurchaseRequest", fields: [userId], references: [id])
+  createdAt              DateTime                  @default(now())
+  updatedAt              DateTime                  @updatedAt
   deletedAt              DateTime?
-  PurchaseRequestArticle PurchaseRequestArticle[]
-  Commande               Commande[]
+  PurchaseRequestArticle PurchaseRequestArticles[]
+  Commande               Commandes[]
 }
 
-model Supplier {
-  id         Int       @id @default(autoincrement())
-  name       String
-  address    String
-  mail       String?
-  tel        String?
-  evaluation Int?
-  categorie  String?
-  longitude  Float?
-  latitude   Float?
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
-  deletedAt  DateTime?
-  articles   Article[]
-}
-
-model Article {
-  id                     Int                      @id @default(autoincrement())
-  nom                    String
-  description            String?
-  price                  Float
-  unite                  String
-  supplierId             Int
-  supplier               Supplier                 @relation(fields: [supplierId], references: [id])
-  image                  String?
-  QttOnStock             Int                      @default(0)
-  createdAt              DateTime                 @default(now())
-  updatedAt              DateTime                 @updatedAt
-  deletedAt              DateTime?
-  PurchaseRequestArticle PurchaseRequestArticle[]
-  DeliveryArticle        DeliveryArticle[]
-}
-
-model PurchaseRequestArticle {
-  id                Int             @id @default(autoincrement())
+model PurchaseRequestArticles {
+  id                Int              @id @default(autoincrement())
   purchaseRequestId Int
-  purchaseRequest   PurchaseRequest @relation(fields: [purchaseRequestId], references: [id])
+  purchaseRequest   PurchaseRequests @relation(fields: [purchaseRequestId], references: [id])
   articleId         Int
-  article           Article         @relation(fields: [articleId], references: [id])
-  quantity          Int             @default(1)
+  article           Articles         @relation(fields: [articleId], references: [id])
+  quantity          Int              @default(1)
   status            String?
-  createdAt         DateTime        @default(now())
-  updatedAt         DateTime        @updatedAt
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
   deletedAt         DateTime?
 }
 
@@ -108,63 +68,49 @@ enum DeliveryStatus {
   DELAYED
 }
 
-model Budget {
-  id        Int        @id @default(autoincrement())
-  montant   Float 
-  year      Int 
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
+model Budgets {
+  id        Int         @id @default(autoincrement())
+  montant   Float
+  year      Int
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
   deletedAt DateTime?
-  commandes Commande[] 
+  commandes Commandes[]
 }
 
-model Commande {
-  id                Int             @id @default(autoincrement())
+model Commandes {
+  id                Int              @id @default(autoincrement())
   purchaseRequestId Int
-  purchaseRequest   PurchaseRequest @relation(fields: [purchaseRequestId], references: [id])
+  purchaseRequest   PurchaseRequests @relation(fields: [purchaseRequestId], references: [id])
   budgetId          Int
-  budget            Budget          @relation(fields: [budgetId], references: [id])
+  budget            Budgets          @relation(fields: [budgetId], references: [id])
   label             String
-  status            String? 
-  delai             DateTime? 
-  createdAt         DateTime        @default(now())
-  updatedAt         DateTime        @updatedAt
+  status            String?
+  delai             DateTime?
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
   deletedAt         DateTime?
-  deliveries        Delivery[] 
+  deliveries        Deliveries[]
 }
 
-model Delivery {
-  id              Int               @id @default(autoincrement())
-  commandeId      Int
-  commande        Commande          @relation(fields: [commandeId], references: [id])
-  deliveryDate    DateTime
-  docs            String? 
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @updatedAt
-  deletedAt       DateTime?
-  DeliveryArticle DeliveryArticle[]
-}
-
-
-
-model DeliveryArticle {
-  id         Int       @id @default(autoincrement())
+model DeliveryArticles {
+  id         Int        @id @default(autoincrement())
   deliveryId Int
-  delivery   Delivery  @relation(fields: [deliveryId], references: [id])
+  delivery   Deliveries @relation(fields: [deliveryId], references: [id])
   articleId  Int
-  article    Article   @relation(fields: [articleId], references: [id])
-  quantity   Int       @default(1) // Changed from Qtt to quantity
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
+  article    Articles   @relation(fields: [articleId], references: [id])
+  quantity   Int        @default(1) // Changed from Qtt to quantity
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
   deletedAt  DateTime?
 
-  @@unique([deliveryId, articleId]) 
+  @@unique([deliveryId, articleId])
 }
 
-model Notification {
+model Notifications {
   id        Int       @id @default(autoincrement())
   userId    Int
-  user      User      @relation(fields: [userId], references: [id])
+  user      Users     @relation(fields: [userId], references: [id])
   label     String
   read      Boolean   @default(false)
   createdAt DateTime  @default(now())
@@ -172,13 +118,91 @@ model Notification {
   deletedAt DateTime?
 }
 
-model Historique {
+model Historiques {
   id        Int       @id @default(autoincrement())
-  titre     String 
+  titre     String
   label     String
   userId    Int?
-  user      User?     @relation(fields: [userId], references: [id])
+  user      Users?    @relation(fields: [userId], references: [id])
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
+}
+
+model Litige {
+  id             Int              @id @default(autoincrement())
+  deliveryId     Int
+  delivery       Deliveries       @relation(fields: [deliveryId], references: [id])
+  supplierId     Int
+  supplier       Suppliers        @relation(fields: [supplierId], references: [id])
+  docs           String?
+  litigeArticles LitigeArticles[]
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  deletedAt      DateTime?
+}
+
+model LitigeArticles {
+  id         Int        @id @default(autoincrement())
+  deliveryId Int
+  delivery   Deliveries @relation(fields: [deliveryId], references: [id])
+  articleId  Int
+  article    Articles   @relation(fields: [articleId], references: [id])
+  quantity   Int        @default(1)
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  deletedAt  DateTime?
+  Litige     Litige?    @relation(fields: [litigeId], references: [id])
+  litigeId   Int?
+
+  @@unique([deliveryId, articleId])
+}
+
+model Deliveries {
+  id               Int                @id @default(autoincrement())
+  commandeId       Int
+  commande         Commandes          @relation(fields: [commandeId], references: [id])
+  deliveryDate     DateTime
+  docs             String?
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  deletedAt        DateTime?
+  deliveryArticles DeliveryArticles[]
+  litige           Litige[]
+  LitigeArticles   LitigeArticles[]
+}
+
+model Articles {
+  id                      Int                       @id @default(autoincrement())
+  name                    String
+  description             String?
+  price                   Float
+  unite                   String
+  supplierId              Int
+  supplier                Suppliers                 @relation(fields: [supplierId], references: [id])
+  image                   String?
+  qttOnStock              Int                       @default(0)
+  createdAt               DateTime                  @default(now())
+  updatedAt               DateTime                  @updatedAt
+  deletedAt               DateTime?
+  purchaseRequestArticles PurchaseRequestArticles[]
+  deliveryArticles        DeliveryArticles[]
+  litigeArticles          LitigeArticles[]
+}
+
+model Suppliers {
+  id         Int        @id @default(autoincrement())
+  name       String
+  address    String
+  mail       String?
+  tel        String?
+  evaluation Int?
+  categorie  String?
+  longitude  Float?
+  latitude   Float?
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  deletedAt  DateTime?
+  articles   Articles[]
+  litiges    Litige[]
 }
