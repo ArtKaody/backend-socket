@@ -1,6 +1,5 @@
 
 import { Injectable } from '@nestjs/common';
-
 import { PrismaService } from 'nestjs-prisma';
 import { FileUploadsService } from 'src/file-uploads/file-uploads.service';
 
