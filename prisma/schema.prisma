@@ -196,10 +196,10 @@ model Suppliers {
   address    String
   mail       String?
   tel        String?
-  evaluation Int?
+  evaluation Int?    
   categorie  String?
-  longitude  Float?
-  latitude   Float?
+  longitude  String?
+  latitude   String?
   createdAt  DateTime   @default(now())
   updatedAt  DateTime   @updatedAt
   deletedAt  DateTime?
