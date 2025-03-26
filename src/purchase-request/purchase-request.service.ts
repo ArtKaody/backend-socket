@@ -173,4 +173,26 @@ export class PurchaseRequestService {
             });
         });
     }
+
+    async validatePurchaseRequest(id: number, validatorId: number) {
+        return this.prisma.purchaseRequests.update({
+            where: { id, deletedAt: null },
+            data: {
+                status: 'validated', // ou 'approved' selon votre logique métier
+                validerId: validatorId,
+                updatedAt: new Date(),
+            },
+            include: {
+                PurchaseRequestArticle: {
+                    where: {
+                        deletedAt: null,
+                    },
+                    include: {
+                        article: true,
+                    },
+                },
+                user: true,
+            },
+        });
+    }
 }
