@@ -41,4 +41,9 @@ export class ArticlesController {
   remove(@Param('id') id: string) {
     return this.articlesService.remove(+id);
   }
+
+  @Get('with/supplier')
+  findArticlesWithSuppliers() {
+    return this.articlesService.findArticlesWithSuppliers();
+  }
 }
