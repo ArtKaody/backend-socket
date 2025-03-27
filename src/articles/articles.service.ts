@@ -7,15 +7,46 @@ import { FileUploadsService } from 'src/file-uploads/file-uploads.service';
 export class ArticlesService {
   constructor(
     private prisma: PrismaService,
-    private fileService:FileUploadsService,
+    private fileService: FileUploadsService,
   ) { }
 
-  async create(data: any, imageFile?: Express.Multer.File) {
+  async create(data: any) {
+    // 1. Destructuration des données
+    const { imageFile, ...rest } = data;
+    
+    // 2. Validation et transformation des données
+    const articleData = {
+      name: rest.name,
+      description: rest.description,
+      price: parseFloat(rest.price),
+      category: rest.category,
+      supplierId: parseInt(rest.supplierId),
+      unite: 'unite', // Valeur par défaut ou à modifier selon vos besoins
+      image: '' // Initialisation de l'image
+    };
+  
+    // 3. Gestion du fichier image
     if (imageFile) {
-      data.image = await this.fileService.saveFile(imageFile, 'articles');
+      try {
+        articleData.image = await this.fileService.saveFile(imageFile, 'articles');
+      } catch (error) {
+        console.error('Erreur lors de la sauvegarde du fichier:', error);
+        throw new Error('Échec de la sauvegarde de l\'image');
+      }
     }
-    return this.prisma.articles.create({ data });
+  
+    // 4. Création de l'article dans la base de données
+    try {
+      return await this.prisma.articles.create({
+        data: articleData
+      });
+    } catch (error) {
+      console.error('Erreur lors de la création de l\'article:', error);
+      throw new Error('Échec de la création de l\'article');
+    }
   }
+
+  
 
   async createMany(data: any[]) {
     // Note: Pour createMany, vous devriez peut-être gérer les fichiers différemment

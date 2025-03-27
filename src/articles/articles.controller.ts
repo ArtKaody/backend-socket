@@ -1,14 +1,20 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFile } from '@nestjs/common';
 import { ArticlesService } from './articles.service';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 
-@Controller('articles')
+@Controller('api/articles')
 export class ArticlesController {
   constructor(private readonly articlesService: ArticlesService) { }
 
   @Post()
-  create(@Body() data: any) {
-    return this.articlesService.create(data);
+  @UseInterceptors(FileInterceptor('imageFile')) // ⚠️ Supprimez '[image]'
+  create(
+    @Body() data: any, // Contiendra name, description, price, etc.
+    @UploadedFile() imageFile: Express.Multer.File // Reçoit le fichier
+  ) {
+
+    return this.articlesService.create({ ...data, imageFile });
   }
 
   @Post('bulk')
