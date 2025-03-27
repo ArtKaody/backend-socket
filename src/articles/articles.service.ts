@@ -133,9 +133,6 @@ export class ArticlesService {
         qttOnStock: true, // Calcule la somme de qttOnStock
       },
     });
-
-   
-
     return result._sum.qttOnStock; 
   }
 

@@ -10,6 +10,7 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { NestApplication } from '@nestjs/core';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -20,7 +21,7 @@ import { join } from 'path';
     NotificationModule, 
     PurchaseRequestModule, 
     SupplierModule, 
-    ArticlesModule,
+    ArticlesModule, UsersModule,
   ],
   controllers: [AppController],
   providers: [AppService, FileUploadsService],

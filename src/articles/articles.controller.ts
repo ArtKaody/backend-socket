@@ -40,6 +40,13 @@ export class ArticlesController {
     return this.articlesService.remove(+id);
   }
 
+  @Get('with/supplier')
+  async findArticlesWithSuppliers() {
+    return await this.articlesService.findArticlesWithSuppliers(); 
+  
+  }
+
+
   @Get('total/stock')
   async getTotalStock() {
     const total = await this.articlesService.getTotalStockCount(); 
