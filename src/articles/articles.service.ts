@@ -123,5 +123,41 @@ export class ArticlesService {
       }))
     );
   }
+
+  async getTotalStockCount(){
+    const result = await this.prisma.articles.aggregate({
+      where: {
+        deletedAt: null, // Ne compte que les articles non supprimés
+      },
+      _sum: {
+        qttOnStock: true, // Calcule la somme de qttOnStock
+      },
+    });
+
+   
+
+    return result._sum.qttOnStock; 
+  }
+
+  async getArticleStockDistribution() {
+    const result = await this.prisma.articles.groupBy({
+      by: ['category'],
+      where: {
+        deletedAt: null, // Seulement les articles non supprimés
+        qttOnStock: { gt: 0 } // Seulement les articles avec stock positif
+      },
+      _sum: {
+        qttOnStock: true // Calcule la somme pour chaque groupe
+      },
+      orderBy: {
+        category: 'asc' // Optionnel: tri par catégorie
+      }
+    });
+    // Transforme le résultat dans le format attendu
+    return result.map(item => ({
+      category: item.category,
+      totalQuantity: item._sum.qttOnStock 
+    }));
+  }
   
 }
