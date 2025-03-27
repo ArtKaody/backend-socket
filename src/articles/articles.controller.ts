@@ -2,18 +2,16 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, Upl
 import { ArticlesService } from './articles.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 
-
 @Controller('api/articles')
 export class ArticlesController {
-  constructor(private readonly articlesService: ArticlesService) { }
+  constructor(private readonly articlesService: ArticlesService) {} // Gardez bien 'articlesService' partout
 
   @Post()
-  @UseInterceptors(FileInterceptor('imageFile')) // ⚠️ Supprimez '[image]'
+  @UseInterceptors(FileInterceptor('imageFile'))
   create(
-    @Body() data: any, // Contiendra name, description, price, etc.
-    @UploadedFile() imageFile: Express.Multer.File // Reçoit le fichier
+    @Body() data: any,
+    @UploadedFile() imageFile: Express.Multer.File
   ) {
-
     return this.articlesService.create({ ...data, imageFile });
   }
 
@@ -42,8 +40,15 @@ export class ArticlesController {
     return this.articlesService.remove(+id);
   }
 
-  @Get('with/supplier')
-  findArticlesWithSuppliers() {
-    return this.articlesService.findArticlesWithSuppliers();
+  @Get('total/stock')
+  async getTotalStock() {
+    const total = await this.articlesService.getTotalStockCount(); 
+    return { total };
+  }
+
+  @Get('stock/distribution')
+  async getStockDistribution() {
+    const distribution = await this.articlesService.getArticleStockDistribution(); 
+    return { data: distribution };
   }
 }
