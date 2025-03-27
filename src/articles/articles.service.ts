@@ -159,35 +159,57 @@ export class ArticlesService {
 
 
   async getArticlePriceOnStock() {
-    const result = await this.prisma.articles.aggregate({
+    const articles = await this.prisma.articles.findMany({
       where: {
-        deletedAt: null, // Ne pas inclure les articles supprimés
-        qttOnStock: { gt: 0 } // Seulement les articles avec stock positif
+        deletedAt: null, // Exclure les articles supprimés
+        qttOnStock: { gt: 0 } // Seulement les articles avec du stock
       },
-      _sum: {
-        // Calcul: SUM(price * qttOnStock)
-        qttOnStock: true // Optionnel: pour vérification
+      select: {
+        price: true,
+        qttOnStock: true
       }
     });
-    return result
+
+    // Calculer la somme totale (price * qttOnStock pour chaque article)
+    const totalValue = articles.reduce((sum, article) => {
+      return sum + (article.price * article.qttOnStock);
+    }, 0);
+
+    return totalValue;
   }
+
 
 
   async getArticlePriceUrgent() {
-
-    const result = await this.prisma.purchaseRequests.aggregate({
+    const purchaseRequests = await this.prisma.purchaseRequests.findMany({
       where: {
         urgent: true,
         deletedAt: null,
-        status: 'approved' 
+        status: 'approved'
       },
-      _sum: {
-        price: true
+      select: {
+        PurchaseRequestArticle: {
+          select: {
+            quantity: true,
+            article: {
+              select: {
+                price: true
+              }
+            }
+          }
+        }
       }
     });
 
-    return result._sum.price
+    // Calculer la somme totale (price * quantity)
+    const totalUrgentPrice = purchaseRequests.reduce((sum, pr) => {
+      return sum + pr.PurchaseRequestArticle.reduce((subSum, pra) => {
+        return subSum + (pra.article.price * pra.quantity);
+      }, 0);
+    }, 0);
 
+    return totalUrgentPrice;
   }
+
 
 }
