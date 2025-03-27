@@ -99,4 +99,29 @@ export class ArticlesService {
       data: { deletedAt: new Date() },
     });
   }
+
+  async findArticlesWithSuppliers() {
+    return this.prisma.articles.findMany({
+      include: {
+        supplier: {
+          select: {
+            id: true,
+            name: true,
+          }
+        }
+      },
+      where: {
+        deletedAt: null
+      },
+      orderBy: {
+        createdAt: 'desc'
+      }
+    }).then(articles =>
+      articles.map(article => ({
+        ...article,
+        supplierName: article.supplier?.name 
+      }))
+    );
+  }
+  
 }
