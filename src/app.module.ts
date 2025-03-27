@@ -11,6 +11,7 @@ import { NestApplication } from '@nestjs/core';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { UsersModule } from './users/users.module';
+import { CommandeModule } from './commande/commande.module';
 
 @Module({
   imports: [
@@ -21,7 +22,7 @@ import { UsersModule } from './users/users.module';
     NotificationModule, 
     PurchaseRequestModule, 
     SupplierModule, 
-    ArticlesModule, UsersModule,
+    ArticlesModule, UsersModule, CommandeModule,
   ],
   controllers: [AppController],
   providers: [AppService, FileUploadsService],
