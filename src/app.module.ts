@@ -8,9 +8,15 @@ import { ArticlesModule } from './articles/articles.module';
 import { FileUploadsService } from './file-uploads/file-uploads.service';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { NestApplication } from '@nestjs/core';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
   imports: [
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'uploads'), // Path to your images folder
+      serveRoot: '/static',
+    }),
     NotificationModule, 
     PurchaseRequestModule, 
     SupplierModule, 
